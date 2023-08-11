@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1024" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Monoton&display=swap"
+      rel="stylesheet"
+    />
+    <title>Tic Tac Toe</title>
+    <style>
+      body {
+        font-family: "Monoton", cursive;
+        /* font-family: 'Press Start 2P', cursive; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        font-family: "Tilt Prism", cursive;
+      }
+      #board {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 5px;
+      }
+      .cell {
+        width: 100px;
+        height: 100px;
+        font-size: 34px;
+        text-align: center;
+        line-height: 100px;
+        background-color: lightgray;
+        cursor: pointer;
+        border-radius: 1rem;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px,
+          rgba(255, 255, 255, 0.23) 0px 3px 6px;
+      }
+      #resetBtn {
+        position: absolute;
+        top: 100px;
+      }
+      #toast {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 20px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        border-radius: 5px;
+        font-size: 18px;
+      }
+      p {
+        position: absolute;
+        top: 1vh;
+      }
+      p a {
+        text-decoration: none;
+        color: inherit;
+        transition: color 0.3s, filter 0.3s;
+        filter: blur(4px); /* Start with blur */
+      }
+
+      p a:hover {
+        color: blue; /* Change color on hover */
+        filter: blur(0); /* Remove blur on hover */
+      }
+      @media (max-width: 768px) {
+        p {
+          font-size: 14px;
+          text-align: center;
+        
+        }
+        .popup-overlay {
+          display: flex;
+        }
+
+        input[type="checkbox"] {
+          background-image: -webkit-linear-gradient(
+              hsla(0, 0%, 0%, 0.1),
+              hsla(0, 0%, 100%, 0.1)
+            ),
+            -webkit-linear-gradient(left, #f66 50%, #6cf 50%);
+          background-size: 100% 100%, 200% 100%;
+          background-position: 0 0, 15px 0;
+          border-radius: 25px;
+          box-shadow: inset 0 1px 4px hsla(0, 0%, 0%, 0.5),
+            inset 0 0 10px hsla(0, 0%, 0%, 0.5), 0 0 0 1px hsla(0, 0%, 0%, 0.1),
+            0 -1px 2px 2px hsla(0, 0%, 0%, 0.25),
+            0 2px 2px 2px hsla(0, 0%, 100%, 0.75);
+          cursor: pointer;
+          height: 25px;
+          padding-right: 25px;
+          width: 75px;
+
+          -webkit-appearance: none;
+          -webkit-transition: 0.25s;
+          
+          position: absolute;
+        }
+      
+      }
+      .popup-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .popup-content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 80%;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      position: relative;
+      z-index: 1001;
+    }
+
+      .button-50 {
+        appearance: button;
+        background-color: #000;
+        background-image: none;
+        border: 1px solid #000;
+        border-radius: 4px;
+        box-shadow: #fff 4px 4px 0 0, #000 4px 4px 0 1px;
+        box-sizing: border-box;
+        color: #fff;
+        cursor: pointer;
+        display: inline-block;
+        font-family: ITCAvantGardeStd-Bk, Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 20px;
+        margin: 0 5px 10px 0;
+        overflow: visible;
+        padding: 12px 40px;
+        text-align: center;
+        text-transform: none;
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-user-select: none;
+        vertical-align: middle;
+        white-space: nowrap;
+      }
+
+      .button-50:focus {
+        text-decoration: none;
+      }
+
+      .button-50:hover {
+        text-decoration: none;
+      }
+
+      .button-50:active {
+        box-shadow: rgba(0, 0, 0, 0.125) 0 3px 5px inset;
+        outline: 0;
+      }
+
+      .button-50:not([disabled]):active {
+        box-shadow: #fff 2px 2px 0 0, #000 2px 2px 0 1px;
+        transform: translate(2px, 2px);
+      }
+
+      .h1 {
+        position: absolute;
+        top: 90vh;
+      }
+
+      /* ---------- */
+      .checkbox-wrapper-25 input[type="checkbox"] {
+        background-image: -webkit-linear-gradient(
+            hsla(0, 0%, 0%, 0.1),
+            hsla(0, 0%, 100%, 0.1)
+          ),
+          -webkit-linear-gradient(left, #f66 50%, #6cf 50%);
+        background-size: 100% 100%, 200% 100%;
+        background-position: 0 0, 15px 0;
+        border-radius: 25px;
+        box-shadow: inset 0 1px 4px hsla(0, 0%, 0%, 0.5),
+          inset 0 0 10px hsla(0, 0%, 0%, 0.5), 0 0 0 1px hsla(0, 0%, 0%, 0.1),
+          0 -1px 2px 2px hsla(0, 0%, 0%, 0.25),
+          0 2px 2px 2px hsla(0, 0%, 100%, 0.75);
+        cursor: pointer;
+        height: 25px;
+        padding-right: 25px;
+        width: 75px;
+        -webkit-appearance: none;
+        -webkit-transition: 0.25s;
+        position: absolute;
+        top: 75vh;
+        left: 45rem;
+      }
+      .checkbox-wrapper-25 input[type="checkbox"]:after {
+        background-color: #eee;
+        background-image: -webkit-linear-gradient(
+          hsla(0, 0%, 100%, 0.1),
+          hsla(0, 0%, 0%, 0.1)
+        );
+        border-radius: 25px;
+        box-shadow: inset 0 1px 1px 1px hsla(0, 0%, 100%, 1),
+          inset 0 -1px 1px 1px hsla(0, 0%, 0%, 0.25),
+          0 1px 3px 1px hsla(0, 0%, 0%, 0.5), 0 0 2px hsla(0, 0%, 0%, 0.25);
+        content: "";
+        display: block;
+        height: 25px;
+        width: 50px;
+      }
+      .checkbox-wrapper-25 input[type="checkbox"]:checked {
+        background-position: 0 0, 35px 0;
+        padding-left: 25px;
+        padding-right: 0;
+      }
+      body.neon-mode {
+        /* Add neon effect to body background */
+        background: linear-gradient(
+          45deg,
+          #f06,
+          #06f,
+          #f06,
+          #06f,
+          #f06,
+          #06f,
+          #f06,
+          #06f,
+          #f06,
+          #06f
+        );
+        background-size: 400% 400%;
+        animation: gradientAnimation 5s ease infinite;
+
+        /* Add neon glow to text */
+        color: transparent;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.8),
+          0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.8);
+      }
+
+      @keyframes gradientAnimation {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+      label {
+        position: absolute;
+        top: 36.9rem;
+        left: 43rem;
+      }
+      .popup-content p {
+  margin: 10px 0;
+  text-align: center;
+}
+
+
+    </style>
+  </head>
+  <body>
+    <div class="checkbox-wrapper-25">
+      <input type="checkbox" id="neonModeToggle" onchange="toggleNeonMode()" />
+      <label for="neonModeToggle">blur mode challenge</label>
+      <!-- <input type="checkbox" /> -->
+    </div>
+    <!-- ! -->
+
+    <div id="board">
+      <div class="cell" onclick="handleClick(0, 0)"></div>
+      <div class="cell" onclick="handleClick(0, 1)"></div>
+      <div class="cell" onclick="handleClick(0, 2)"></div>
+      <div class="cell" onclick="handleClick(1, 0)"></div>
+      <div class="cell" onclick="handleClick(1, 1)"></div>
+      <div class="cell" onclick="handleClick(1, 2)"></div>
+      <div class="cell" onclick="handleClick(2, 0)"></div>
+      <div class="cell" onclick="handleClick(2, 1)"></div>
+      <div class="cell" onclick="handleClick(2, 2)"></div>
+    </div>
+    <button id="resetBtn" class="button-50">Reset</button>
+    <div id="toast"></div>
+    <p>
+      Game created by
+      <a href="https://openai.com/" target="_blank"> Open AI</a>. | &copy;
+      <a href="https://shreyx.netlify.app/" target="_blank"> Shrey</a>.
+      <br />Source Code -
+      <a href="https://github.com/shrey890/ttc" target="_blank">Github </a>
+    </p>
+
+    <main class="h1">
+      <h1 id="typingEffect">Tic Tac Toe</h1>
+    </main>
+    <div class="popup-overlay" id="popupOverlay">
+      <div class="popup-content">
+        <p>For the best experience, please use a laptop or desktop computer.</p>
+        <p>
+          <button class="button-50" onclick="closePopup()">Got it</button>
+        </p>
+      </div>
+    </div>
+
+    <script>
+      function toggleNeonMode() {
+        const body = document.body;
+        body.classList.toggle("neon-mode");
+      }
+      // !-----
+      const toast = document.getElementById("toast");
+      function showToast(message) {
+        toast.textContent = message;
+        toast.style.display = "block";
+        setTimeout(() => {
+          toast.style.display = "none";
+        }, 2000); // Show for 2 seconds
+      }
+      const board = [
+        ["", "", ""],
+        ["", "", ""],
+        ["", "", ""],
+      ];
+      let currentPlayer = "X";
+      const cells = document.querySelectorAll(".cell");
+
+      function checkWinner() {
+        const winningCombinations = [
+          [
+            [0, 0],
+            [0, 1],
+            [0, 2],
+          ],
+          [
+            [1, 0],
+            [1, 1],
+            [1, 2],
+          ],
+          [
+            [2, 0],
+            [2, 1],
+            [2, 2],
+          ],
+          [
+            [0, 0],
+            [1, 0],
+            [2, 0],
+          ],
+          [
+            [0, 1],
+            [1, 1],
+            [2, 1],
+          ],
+          [
+            [0, 2],
+            [1, 2],
+            [2, 2],
+          ],
+          [
+            [0, 0],
+            [1, 1],
+            [2, 2],
+          ],
+          [
+            [0, 2],
+            [1, 1],
+            [2, 0],
+          ],
+        ];
+
+        for (const combo of winningCombinations) {
+          const [a, b, c] = combo;
+          if (
+            board[a[0]][a[1]] &&
+            board[a[0]][a[1]] === board[b[0]][b[1]] &&
+            board[a[0]][a[1]] === board[c[0]][c[1]]
+          ) {
+            return true;
+          }
+        }
+
+        return false;
+      }
+      function handleClick(row, col) {
+        if (board[row][col] === "" && !checkWinner()) {
+          board[row][col] = currentPlayer;
+          cells[row * 3 + col].textContent = currentPlayer;
+
+          if (checkWinner()) {
+            showToast(`${currentPlayer} wins!`);
+            setTimeout(() => {
+              resetBoard();
+            }, 2000); // Reset after 2 seconds
+          } else {
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+          }
+        }
+      }
+      function resetBoard() {
+        board.forEach((row, rowIndex) => {
+          row.forEach((cell, colIndex) => {
+            board[rowIndex][colIndex] = "";
+            cells[rowIndex * 3 + colIndex].textContent = "";
+          });
+        });
+
+        currentPlayer = "X";
+      }
+
+      cells.forEach((cell) =>
+        cell.addEventListener("click", () =>
+          handleClick(
+            Math.floor(cell.dataset.index / 3),
+            cell.dataset.index % 3
+          )
+        )
+      );
+      function typeEffect(element, text, delay = 100) {
+        let index = 0;
+        function type() {
+          if (index < text.length) {
+            element.textContent += text.charAt(index);
+            index++;
+            setTimeout(type, delay);
+          } else {
+            setTimeout(() => {
+              element.textContent = ""; // Clear the text
+              typeEffect(element, text, delay); // Restart typing
+            }, delay * 2); // Delay before restarting
+          }
+        }
+        type();
+      }
+      window.addEventListener("resize", resetBoard);
+
+      const resetBtn = document.getElementById("resetBtn");
+      resetBtn.addEventListener("click", resetBoard);
+      const typingEffectElement = document.getElementById("typingEffect");
+      const titleText = typingEffectElement.textContent;
+      typingEffectElement.textContent = ""; // Clear the text
+      typeEffect(typingEffectElement, titleText);
+      function closePopup() {
+  const popupOverlay = document.getElementById("popupOverlay");
+  popupOverlay.style.display = "none";
+}
+
+      if (window.innerWidth <= 768) {
+        const popupOverlay = document.getElementById("popupOverlay");
+        popupOverlay.style.display = "flex";
+      }
+      // !----------------
+    </script>
+  </body>
+</html>
